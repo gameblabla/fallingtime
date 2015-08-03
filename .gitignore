@@ -1,0 +1,7 @@
+./src/*.o
+./src/platform/*.o
+./src/chipmunk/src/*.o
+./nspire/
+./Readme_dc.txt
+*.tns
+./dc/

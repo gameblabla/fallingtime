@@ -1,0 +1,25 @@
+
+#define TAIL_SIZE 0x167
+#define STARS_SIZE 0x98
+#define SPARKS_RED_SIZE 0xdb
+#define SPARKS_SIZE 0xaa
+#define PENGUIN_BLACK_SIZE 0xa217
+#define PENGUIN_BALL_SIZE 0xa40a
+#define KEYBOARD0_SIZE 0x64d
+#define KEYBOARD1_SIZE 0x6eb
+#define ICON_SIZE 0x9c4
+#define ICEBERGS_SIZE 0x76bc
+#define GCW1_SIZE 0xda5
+#define GCW0G_SIZE 0x14e1
+#define GCW0ANALOG_SIZE 0xfa8
+#define GCW0_SIZE 0xa56
+#define GAMEOVER_SIZE 0x1661
+#define FLOOR0_SIZE 0x1b41
+#define FLOOR1_SIZE 0x1b1a
+#define FLOOR2_SIZE 0x19a3
+#define FLOOR3_SIZE 0x1b08
+#define FLOOR4_SIZE 0x196d
+#define FLOOR5_SIZE 0x1b24
+#define FLARE_SIZE 0x202
+#define EGGPLANT_SIZE 0x124
+#define ANIM_SIZE 0x354f
