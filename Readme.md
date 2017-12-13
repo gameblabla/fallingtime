@@ -12,6 +12,7 @@ You can also grab eggplants to increase your overall score too.
 The game also has a multiplayer. (it's local though)
 
 On TI Nspire, you really should overclock your calc when possible.
+
 CONTROLS
 ===========
 
