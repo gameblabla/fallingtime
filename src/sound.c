@@ -82,9 +82,11 @@ void SoundPlay(Mix_Chunk *sound, const float volume)
 
 void SoundPlayBounce(const float speed)
 {
+	#ifndef NOSOUND
 	const float imp = (float)fabs(speed);
 	if (imp < BOUNCE_SPEED_MIN_VOLUME) return;
 	SoundPlay(SoundPlayerBounce, imp / BOUNCE_SPEED_MAX_VOLUME);
+	#endif
 }
 
 void SoundPlayRoll(const int player, const float speed)
