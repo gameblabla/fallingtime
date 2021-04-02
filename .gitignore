@@ -5,3 +5,5 @@
 ./Readme_dc.txt
 *.tns
 ./dc/
+*.o
+*.elf
