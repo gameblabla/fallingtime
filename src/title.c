@@ -46,6 +46,10 @@
 #include "bg.h"
 #include "sys_specifics.h"
 
+#ifdef SCALING
+extern SDL_Surface* rl_Screen;
+#endif
+
 static bool Start = false;
 static char WelcomeMessage[256];
 static int winnerIndices[MAX_PLAYERS];
@@ -229,7 +233,12 @@ void TitleScreenOutputFrame(void)
 		Screen, font, WelcomeMessage, (int)(SCREEN_HEIGHT * 0.75f), c);
 #endif
 
+	#ifdef SCALING
+	SDL_SoftStretch(Screen, NULL, rl_Screen, NULL);
+	SDL_Flip(rl_Screen);
+	#else
 	SDL_Flip(Screen);
+	#endif
 }
 static SDL_Surface *GetControlSurface(const int i)
 {

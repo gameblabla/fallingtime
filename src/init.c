@@ -61,6 +61,10 @@ KOS_INIT_ROMDISK(romdisk);
 	SDL_RWops *rw, *rw2, *rw3;
 #endif
 
+#ifdef SCALING
+	SDL_Surface *rl_Screen;
+#endif
+
 void Initialize(bool* Continue, bool* Error)
 {
 	SDL_Surface *tmp;
@@ -82,7 +86,20 @@ void Initialize(bool* Continue, bool* Error)
 #ifdef NSPIRE
 	Screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, has_colors ? 16 : 8, SDL_SWSURFACE);
 #else
-	Screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 16, SDL_SWSURFACE);
+	#ifdef SCALING
+	rl_Screen = SDL_SetVideoMode(0, 0, 16, SDL_HWSURFACE
+	#ifdef SDL_TRIPLEBUF
+	| SDL_TRIPLEBUF
+	#endif
+	);
+	Screen = SDL_CreateRGBSurface(SDL_HWSURFACE, 320, 240, 16, 0,0,0,0);
+	#else
+	Screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 16, SDL_HWSURFACE
+	#ifdef SDL_TRIPLEBUF
+	| SDL_TRIPLEBUF
+	#endif
+	);
+	#endif
 #endif
 
 	SDL_ShowCursor(0);
@@ -163,19 +180,28 @@ void Initialize(bool* Continue, bool* Error)
 	if (rw) SDL_FreeRW(rw);
 #else
 	tmp = SDL_LoadBMP(IMAGE_PEN);
-	SDL_SetColorKey(tmp, (SDL_SRCCOLORKEY | SDL_ACCELERATION_RLE), SDL_MapRGB(tmp->format, 255, 0, 255));
-	PlayerSpritesheets[0] = SDL_DisplayFormat(tmp);
-	if (tmp) SDL_FreeSurface(tmp);
+	if (tmp)
+	{
+		SDL_SetColorKey(tmp, (SDL_SRCCOLORKEY | SDL_ACCELERATION_RLE), SDL_MapRGB(tmp->format, 255, 0, 255));
+		PlayerSpritesheets[0] = SDL_DisplayFormat(tmp);
+		SDL_FreeSurface(tmp);
+	}
 	
 	tmp = SDL_LoadBMP(IMAGE_PENGUIN_BLACK);
-	SDL_SetColorKey(tmp, (SDL_SRCCOLORKEY | SDL_ACCELERATION_RLE), SDL_MapRGB(tmp->format, 255, 0, 255));
-	PlayerSpritesheets[1] = SDL_DisplayFormat(tmp);
-	if (tmp) SDL_FreeSurface(tmp);
+	if (tmp)
+	{
+		SDL_SetColorKey(tmp, (SDL_SRCCOLORKEY | SDL_ACCELERATION_RLE), SDL_MapRGB(tmp->format, 255, 0, 255));
+		PlayerSpritesheets[1] = SDL_DisplayFormat(tmp);
+		SDL_FreeSurface(tmp);
+	}
 
 	tmp = SDL_LoadBMP(IMAGE_EGGPLANT);
-	SDL_SetColorKey(tmp, (SDL_SRCCOLORKEY | SDL_ACCELERATION_RLE), 0);
-	PickupImage = SDL_DisplayFormat(tmp);
-	if (tmp) SDL_FreeSurface(tmp);
+	if (tmp)
+	{
+		SDL_SetColorKey(tmp, (SDL_SRCCOLORKEY | SDL_ACCELERATION_RLE), 0);
+		PickupImage = SDL_DisplayFormat(tmp);
+		SDL_FreeSurface(tmp);
+	}
 #endif
 
 

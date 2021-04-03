@@ -51,6 +51,10 @@
 #include <string.h>
 #endif
 
+#ifdef SCALING
+extern SDL_Surface* rl_Screen;
+#endif
+
 static bool                   Pause;
 
 #ifdef NOSOUND
@@ -255,8 +259,13 @@ void GameOutputFrame(void)
 
 		c++;
 	}
-
+	
+	#ifdef SCALING
+	SDL_SoftStretch(Screen, NULL, rl_Screen, NULL);
+	SDL_Flip(rl_Screen);
+	#else
 	SDL_Flip(Screen);
+	#endif
 }
 
 void ToGame(void)
