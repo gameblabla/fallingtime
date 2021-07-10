@@ -211,6 +211,7 @@ static inline void get_user_config_folder(char *out, unsigned int maxlen, const 
 	const char *out_orig = out;
 	char *home = getenv("XDG_CONFIG_HOME");
 	unsigned int config_len = 0;
+	char config_path[128];
 	if (!home) {
 		home = getenv("HOME");
 		if (!home) {
@@ -223,6 +224,9 @@ static inline void get_user_config_folder(char *out, unsigned int maxlen, const 
 
 	unsigned int home_len = strlen(home);
 	unsigned int appname_len = strlen(appname);
+	
+	snprintf(config_path, sizeof(config_path), "%s/.config", getenv("HOME"));
+	mkdir(config_path, 0755);
 
 	/* first +1 is "/", second is trailing "/", third is terminating null */
 	if (home_len + 1 + config_len + appname_len + 1 + 1 > maxlen) {
