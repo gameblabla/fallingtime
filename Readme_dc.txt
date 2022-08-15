@@ -11,3 +11,7 @@ The game also has a local multiplayer mode. (up to 2 players)
 
 The game is automatically saving to the first VMU, maybe i will do a
 menu where you can choose the VMU where you want to save. 
+
+V1.1
+- Fixed bugs
+- Improved performance (ADX streaming, ADPCM samples etc..)

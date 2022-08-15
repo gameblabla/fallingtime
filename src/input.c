@@ -59,8 +59,10 @@ int JoystickIndex = -1;
 
 #ifdef DREAMCAST
 #include <kos.h>
-maple_device_t *cont, *cont2;
-cont_state_t *state, *state2;
+maple_device_t *cont[2];
+cont_state_t *state[2];
+kbd_state_t* kb_state[2];
+mouse_state_t* mouse_state[2];
 #endif
 
 
@@ -132,43 +134,73 @@ signed short GetMovement(const int player)
 #ifdef DREAMCAST
 	unsigned char left;
 	unsigned char right;
+	int control_type[2];
 	
 	left = 0;
 	right = 0;
-	
-	cont  = maple_enum_type(0, MAPLE_FUNC_CONTROLLER);
-	state = (cont_state_t *) maple_dev_status(cont);
-	cont2  = maple_enum_type(1, MAPLE_FUNC_CONTROLLER);
-	state2 = (cont_state_t *) maple_dev_status(cont2);
-	
-	if (player == 0 && cont)
+	control_type[player] = 0;
+	cont[player]  = maple_enum_type(player, MAPLE_FUNC_CONTROLLER);
+	if (!cont[player])
 	{
-		if (state->buttons & CONT_DPAD_LEFT)
+		/*control_type[player] = 1;
+		cont[player] = maple_enum_type(player, MAPLE_FUNC_KEYBOARD);
+		if (!cont[player])
 		{
-			 left = 1;
-			 right = 0;
-		}
-		else if (state->buttons & CONT_DPAD_RIGHT)
-		{
-			 left = 0;
-			 right = 1; 
-		}
+			control_type[player] = 2;
+			cont[player] = maple_enum_type(player, MAPLE_FUNC_MOUSE);*/
+			if (!cont[player]) return 0;
+		//}
 	}
-	
-	if (player == 1 && cont2)
+	state[player] = NULL;
+	/*kb_state[player] = NULL;
+	mouse_state[player] = NULL;*/
+	if (cont[player])
 	{
-		if (state2->buttons & CONT_DPAD_LEFT)
+		
+		switch(control_type[player])
 		{
-			 left = 1;
-			 right = 0;
+			default:
+			state[player] = (cont_state_t *) maple_dev_status(cont[player]);
+			if (state[player]->buttons & CONT_DPAD_LEFT || state[player]->joyx < -64)
+			{
+				 left = 1;
+				 right = 0;
+			}
+			else if (state[player]->buttons & CONT_DPAD_RIGHT || state[player]->joyx > 64)
+			{
+				 left = 0;
+				 right = 1; 
+			}
+			break;
+			/*case 1:
+			kb_state[player] = (kbd_state_t *) maple_dev_status(cont[player]);
+			if (kb_state[player]->matrix[KBD_KEY_LEFT])
+			{
+				 left = 1;
+				 right = 0;
+			}
+			else if (kb_state[player]->matrix[KBD_KEY_RIGHT])
+			{
+				 left = 0;
+				 right = 1; 
+			}
+			break;
+			case 2:
+			mouse_state[player] = (mouse_state_t *) maple_dev_status(cont[player]);
+			if (mouse_state[player]->dx < -1)
+			{
+				 left = 1;
+				 right = 0;
+			}
+			else if (mouse_state[player]->dx > 1)
+			{
+				 left = 0;
+				 right = 1; 
+			}
+			break;*/
 		}
-		else if (state2->buttons & CONT_DPAD_RIGHT)
-		{
-			 left = 0;
-			 right = 1; 
-		}
+
 	}
-	
 	
 	return left ? (right ? 0 : -32768) : (right ? 32767 : 0);
 	

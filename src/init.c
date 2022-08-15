@@ -31,6 +31,10 @@
 #include "eggplant.h"
 #endif
 
+#ifdef DREAMCAST
+#include <SDL/SDL_dreamcast.h>
+#endif
+
 #include "font.h"
 
 #include "gap.h"
@@ -50,8 +54,10 @@
 #ifdef DREAMCAST
 #include <kos.h>
 #include <string.h>
-#include <mp3/sndserver.h>
-#include <oggvorbis/sndoggvorbis.h>
+//#include <mp3/sndserver.h>
+//#include <oggvorbis/sndoggvorbis.h>
+#include <libadx/libadx.h> /* ADX Decoder Library */
+#include <libadx/snddrv.h> /* Direct Access to Sound Driver */
 uint8 romdisk[];
 KOS_INIT_FLAGS(INIT_DEFAULT | INIT_MALLOCSTATS);
 KOS_INIT_ROMDISK(romdisk);
@@ -83,6 +89,10 @@ void Initialize(bool* Continue, bool* Error)
 	else
 		printf("SDL initialisation succeeded\n");
 
+#ifdef DREAMCAST
+	SDL_DC_SetVideoDriver(SDL_DC_DMA_VIDEO);
+#endif
+
 #ifdef NSPIRE
 	Screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, has_colors ? 16 : 8, SDL_SWSURFACE);
 #else
@@ -97,19 +107,14 @@ void Initialize(bool* Continue, bool* Error)
 	Screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 16, SDL_HWSURFACE
 	#ifdef SDL_TRIPLEBUF
 	| SDL_TRIPLEBUF
+	#else
+	| SDL_DOUBLEBUF
 	#endif
 	);
 	#endif
 #endif
 
 	SDL_ShowCursor(0);
-
-#ifndef NOSOUND
-#ifdef DREAMCAST
-	snd_stream_init();
-	sndoggvorbis_init();
-#endif
-#endif
 
 	if (Screen == NULL)
 	{
@@ -159,7 +164,7 @@ void Initialize(bool* Continue, bool* Error)
 	tmp = SDL_LoadBMP_RW(rw, 0);
 	SDL_SetColorKey(tmp, (SDL_SRCCOLORKEY | SDL_ACCELERATION_RLE), SDL_MapRGB(tmp->format, 255, 0, 255));
 	PlayerSpritesheets[0] = SDL_DisplayFormat(tmp);
-	
+
 	if (tmp) SDL_FreeSurface(tmp);
 	if (rw) SDL_FreeRW(rw);
 	
@@ -178,6 +183,7 @@ void Initialize(bool* Continue, bool* Error)
 	
 	if (tmp) SDL_FreeSurface(tmp);
 	if (rw) SDL_FreeRW(rw);
+	
 #else
 	tmp = SDL_LoadBMP(IMAGE_PEN);
 	if (tmp)
@@ -203,7 +209,6 @@ void Initialize(bool* Continue, bool* Error)
 		SDL_FreeSurface(tmp);
 	}
 #endif
-
 
 #define LOAD_ANIM(_anim, _path, _w, _h, _fps)\
 	if (!AnimationLoad(&(_anim), _path, (_w), (_h), (_fps)))\
@@ -244,13 +249,17 @@ void Initialize(bool* Continue, bool* Error)
 	
 	
 #ifdef DREAMCAST
+	printf("Load sound\n");
+	snd_stream_init();
+	//sndoggvorbis_init();
 	SoundBeep = snd_sfx_load(SOUND_BEEP_FILE);
 	SoundPlayerBounce = snd_sfx_load(SOUND_BOUNCE_FILE);
 	SoundStart = snd_sfx_load(SOUND_START_FILE);
 	SoundLose = snd_sfx_load(SOUND_LOSE_FILE);
 	SoundScore = snd_sfx_load(SOUND_SCORE_FILE);
 	SoundLoad();
-	sndoggvorbis_start(MUSIC_FILE, -1);
+	adx_dec( MUSIC_FILE, 1 );
+	//sndoggvorbis_start(MUSIC_FILE, -1);
 #else
 	SoundBeep = Mix_LoadWAV_RW(SDL_RWFromFile(SOUND_BEEP_FILE, "rb"), 1);
 	SoundPlayerBounce = Mix_LoadWAV_RW(SDL_RWFromFile(SOUND_BOUNCE_FILE, "rb"), 1);
@@ -320,7 +329,8 @@ void Finalize()
 #ifndef NOSOUND
 #ifdef DREAMCAST
 	snd_sfx_unload_all();
-	sndoggvorbis_stop();
+	adx_stop();
+	//sndoggvorbis_stop();
 #else
 	if (SoundPlayerBounce) Mix_FreeChunk(SoundPlayerBounce);
 	if (SoundBeep) Mix_FreeChunk(SoundBeep);

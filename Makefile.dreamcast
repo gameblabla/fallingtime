@@ -1,9 +1,9 @@
 CC=kos-cc
 SH_DIRECTORY=/opt/toolchains/dc/sh-elf/bin/
 
-CFLAGS = -Os -fomit-frame-pointer -std=c99 -Wall -DNDEBUG $(FFLAGS)
+CFLAGS = -O2 -flto -fomit-frame-pointer -std=c99 -Wall -Wextra -DNDEBUG $(FFLAGS)
 FFLAGS = -I./ -I./src -I./src/res -I./src/chipmunk/include -DDREAMCAST -DTTF -DVMU
-LDFLAGS = -lSDL -lSDL_ttf -ltremor -lm -lfreetype -lkosext2fs -lz
+LDFLAGS = -Wl,--start-group -lSDL -lSDL_ttf -lm -lfreetype -lz -lADX -Wl,--end-group -flto -s
 OUTPUT = fallingtime
 
 SOURCES = romdisk.o ./src/platform/general.c ./src/animation.c ./src/bg.c ./src/box.c ./src/camera.c ./src/c_array.c ./src/draw.c ./src/game.c ./src/gap.c ./src/high_score.c ./src/init.c ./src/input.c ./src/main.c ./src/particle.c ./src/pickup.c ./src/player.c ./src/sound.c ./src/space.c ./src/text.c ./src/title.c 
@@ -15,7 +15,12 @@ OBJS = ${SOURCES:.c=.o} ${SRC:.c=.o}
 all: romdisk.img fallingtime scramble
 
 scramble:
-	${SH_DIRECTORY}sh-elf-objcopy -R .stack -O binary ${OUTPUT} FALLING.BIN
+	rm -f IP.BIN
+	${SH_DIRECTORY}sh-elf-objcopy -R .stack -O binary ${OUTPUT} main.bin
+	${KOS_BASE}/utils/scramble/scramble main.bin ./cd/1ST_READ.BIN
+	makeip ip.txt IP.BIN
+	mkisofs -V fallingtime -G IP.BIN -joliet -rock -l -x cd -o "fallingtime.iso" ./cd
+	cdi4dc fallingtime.iso fallingtime.cdi -d
 
 romdisk.img:
 	$(KOS_GENROMFS) -f romdisk.img -d ./src/romdisk -v
@@ -31,7 +36,4 @@ fallingtime:	${OBJS}
 		$(CC) -o $@ $+ ${LDFLAGS}
 	
 clean:
-	rm ./FALLING.BIN
-	rm ./romdisk.img
-	rm ${OBJS}
-	rm ${OUTPUT}
+	rm ./FALLING.BIN ./romdisk.img ${OBJS} ${OUTPUT} cd/*.BIN

@@ -9,8 +9,6 @@
 #ifdef DREAMCAST
 #include <kos.h>
 #include <string.h>
-#include <mp3/sndserver.h>
-#include <oggvorbis/sndoggvorbis.h>
 #endif
 
 
@@ -69,7 +67,7 @@ void SoundPlay(Mix_Chunk *sound, const float volume)
 {
 #ifndef NOSOUND
 	#ifdef DREAMCAST
-	snd_sfx_play(sound, 128, 128);
+	snd_sfx_play(sound, 255, 128);
 	#else
 	const int channel = Mix_PlayChannel(-1, sound, 0);
 	if (channel >= 0)

@@ -5,13 +5,13 @@
 #endif
 
 #if defined(DREAMCAST)
-	#define SOUND_BEEP_FILE "/rd/beep.wav"
-	#define SOUND_BOUNCE_FILE "/rd/bounce.wav"
-	#define SOUND_START_FILE "/rd/start.wav"
-	#define SOUND_LOSE_FILE "/rd/lose.wav"
-	#define SOUND_SCORE_FILE "/rd/score.wav"
-	#define SOUND_ROLL_FILE "/rd/roll.wav"
-	#define MUSIC_FILE "/rd/musicdc.ogg"
+	#define SOUND_BEEP_FILE "/rd/beep.adp"
+	#define SOUND_BOUNCE_FILE "/rd/bounce.adp"
+	#define SOUND_START_FILE "/rd/start.adp"
+	#define SOUND_LOSE_FILE "/rd/lose.adp"
+	#define SOUND_SCORE_FILE "/rd/score.adp"
+	#define SOUND_ROLL_FILE "/rd/roll.adp"
+	#define MUSIC_FILE "/rd/musicdc.adx"
 	
 	#define IMAGE_GAMEOVER "/cd/data/graphics/gameover.bmp"
 	#define IMAGE_ANIM "/cd/data/graphics/anim.bmp"
